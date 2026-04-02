@@ -35,6 +35,7 @@ ALL_DOCS := $(shell find . -name '*.md' -type f | sort)
 # All directories with go.mod files related to opentelemetry library. Used for building, testing and linting.
 ALL_GO_MOD_DIRS := $(filter-out $(TOOLS_MOD_DIR) $(CHECKAPI_INTERNAL_MOD_DIRS), $(shell find . -type f -name 'go.mod' -exec dirname {} \; | sort))
 ALL_COVERAGE_MOD_DIRS := $(shell find . -type f -name 'go.mod' -exec dirname {} \; | grep -v '^$(TOOLS_MOD_DIR)' | sort)
+MOD_DIRS_TO_TEST := $(ALL_GO_MOD_DIRS)
 
 GO ?= go
 TIMEOUT = 60
@@ -128,7 +129,7 @@ NEW_PATH := $(UPDATED_PATH)$(PATH_SEPARATOR)$(PATH)
 
 .PHONY: generate
 generate: | $(MOQ)
-	set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "$(GO) generate $${dir}/..."; \
 	  (cd "$${dir}" && \
 	    PATH="$(UPDATED_PATH)$(PATH_SEPARATOR)$${PATH}" $(GO) generate ./...); \
@@ -137,7 +138,7 @@ generate: | $(MOQ)
 .PHONY: build
 build: generate
 	# Build all package code including testing code.
-	set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "$(GO) build $${dir}/..."; \
 	  (cd "$${dir}" && \
 	    $(GO) build ./... && \
@@ -157,12 +158,22 @@ test-verbose: ARGS=-v
 test-race:    ARGS=-race
 $(TEST_TARGETS): test
 test:
-	@set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	@set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "$(GO) test -timeout $(TIMEOUT)s $(ARGS) $${dir}/..."; \
 	  (cd "$${dir}" && \
 	    $(GO) list ./... \
 		  | grep -v third_party \
 		  | xargs $(GO) test -timeout $(TIMEOUT)s $(ARGS)); \
+	done
+
+.PHONY: test-integration
+test-integration:
+	@set -e; for dir in $(MOD_DIRS_TO_TEST); do \
+	  if grep -rq "//go:build integration" "$${dir}"; then \
+	    echo "Running integration tests in $${dir} with $(TIMEOUT)s timeout..."; \
+	    (cd "$${dir}" && \
+	      $(GO) test -v -timeout $(TIMEOUT)s -tags=integration,ignore_unit ./...); \
+	  fi \
 	done
 
 COVERAGE_MODE    = atomic
@@ -187,7 +198,7 @@ lint: misspell golangci-lint govulncheck
 
 .PHONY: golangci-lint
 golangci-lint: generate | $(GOLANGCI_LINT)
-	set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "golangci-lint in $${dir}"; \
 	  (cd "$${dir}" && \
 	    $(GOLANGCI_LINT) run --fix && \
@@ -196,7 +207,7 @@ golangci-lint: generate | $(GOLANGCI_LINT)
 
 .PHONY: govulncheck
 govulncheck: | $(GOVULNCHECK)
-	set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "golvulncheck in $${dir}"; \
 	  (cd "$${dir}" && \
 	    $(GOVULNCHECK) ./...); \
@@ -204,7 +215,7 @@ govulncheck: | $(GOVULNCHECK)
 
 .PHONY: tidy
 tidy: | crosslink
-	set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	set -e; for dir in $(MOD_DIRS_TO_TEST); do \
 	  echo "$(GO) mod tidy in $${dir}"; \
 	  (cd "$${dir}" && $(GO) mod tidy); \
 	done
