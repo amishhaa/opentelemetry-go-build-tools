@@ -12,7 +12,7 @@ contrib repositories
 ## Tools
 
 This repository provides tooling for OpenTelemetry Go projects. Below are
-overviews and examples of each provided tools:
+overviews and examples of each provided tools: A change for testing.
 
 ### [`gotmpl`](./gotmpl/README.md)
 
