@@ -3,11 +3,11 @@
 # Copyright The OpenTelemetry Authors
 # SPDX-License-Identifier: Apache-2.0
 
-FILES=$@
+AFFECTED_FILES=$@
 
 declare -A affected_modules
 
-for FILE in $FILES; do
+for FILE in $AFFECTED_FILES; do
     DIR=$(dirname "$FILE")
 
     # Walk up the directory tree and collect all directories with go.mod files.
