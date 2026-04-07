@@ -180,7 +180,7 @@ jobs:
   detect-changes:
     runs-on: ubuntu-latest
     outputs:
-      modules: ${{ steps.set-mods.outputs.affected_modules }}
+      affected_modules: ${{ steps.set-affected-modules.outputs.affected_modules }}
 
     steps:
       - name: Checkout Repo
@@ -194,7 +194,7 @@ jobs:
           BASE="${{ github.event.pull_request.base.sha }}"
           echo "BASE=$BASE"
           AFFECTED_FILES=$(git diff --name-only "$BASE" HEAD || true)
-          echo "AFFECTED_FILES=$FILES"
+          echo "AFFECTED_FILES=$AFFECTED_FILES"
           chmod +x ./get_affected_pkgs.sh
-          MODS=$(./get_affected_pkgs.sh $FILES)
+          MODS=$(./get_affected_pkgs.sh $AFFECTED_FILES)
           echo "affected_modules=$MODS" >> $GITHUB_OUTPUT
