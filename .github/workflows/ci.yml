@@ -63,13 +63,13 @@ jobs:
     - name: Run linters
       shell: bash
       run: |
-        AFFECTED_MODULES=${{ needs.detect-changes.outputs.affected_modules }}
+        AFFECTED_MODULES="${{ needs.detect-changes.outputs.affected_modules }}"
         make multimod-verify license-check lint ALL_GO_MOD_DIRS="$AFFECTED_MODULES"
 
     - name: Build
       shell: bash
       run: |
-        AFFECTED_MODULES=${{ needs.detect-changes.outputs.affected_modules }}
+        AFFECTED_MODULES="${{ needs.detect-changes.outputs.affected_modules }}"
         make build ALL_GO_MOD_DIRS="$AFFECTED_MODULES"
 
     - name: Check clean repository
@@ -107,7 +107,7 @@ jobs:
     - name: Run tests with race detector
       shell: bash
       run: |
-        AFFECTED_MODULES=${{ needs.detect-changes.outputs.affected_modules }}
+        AFFECTED_MODULES="${{ needs.detect-changes.outputs.affected_modules }}"
         make test-race ALL_GO_MOD_DIRS="$AFFECTED_MODULES"
 
   test-coverage:
