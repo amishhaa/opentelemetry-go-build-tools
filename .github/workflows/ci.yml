@@ -196,5 +196,5 @@ jobs:
           AFFECTED_FILES=$(git diff --name-only "$BASE" HEAD || true)
           echo "AFFECTED_FILES=$AFFECTED_FILES"
           chmod +x ./get_affected_pkgs.sh
-          MODS=$(./get_affected_pkgs.sh $AFFECTED_FILES)
-          echo "affected_modules=$MODS" >> $GITHUB_OUTPUT
+          AFFECTED_MODULES=$(./get_affected_pkgs.sh $AFFECTED_FILES)
+          echo "affected_modules=$AFFECTED_MODULES" >> $GITHUB_OUTPUT
