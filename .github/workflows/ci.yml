@@ -192,7 +192,7 @@ jobs:
         id: set-affected-modules
         run: |
           git fetch --all --prune
-          BASE="${{ github.event.pull_request.base.sha }}"
+          BASE="${{ github.event.pull_request.base.sha || github.event.before }}"
           echo "BASE=$BASE"
           AFFECTED_FILES=$(git diff --name-only "$BASE" HEAD || true)
           echo "AFFECTED_FILES=$AFFECTED_FILES"
