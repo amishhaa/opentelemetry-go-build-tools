@@ -165,6 +165,14 @@ test:
 		  | xargs $(GO) test -timeout $(TIMEOUT)s $(ARGS)); \
 	done
 
+test-integration:
+	@set -e; for dir in $(ALL_GO_MOD_DIRS); do \
+	  (cd "$${dir}" && \
+	    $(GO) list -tags=integration -f \
+	      '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./... \
+	    | xargs -r $(GO) test -timeout $(TIMEOUT)s -tags=integration); \
+	done
+
 COVERAGE_MODE    = atomic
 COVERAGE_PROFILE = coverage.out
 .PHONY: test-coverage
