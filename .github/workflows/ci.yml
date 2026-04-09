@@ -194,7 +194,7 @@ jobs:
 
           # Exclude tools and checkapi internal modules
           TOOLS_MOD_DIR="./internal/tools"
-          CHECKAPI_INTERNAL_MOD_DIRS=$(find ./checkapi/internal -type f -name 'go.mod' -exec dirname {} \;)
+          CHECKAPI_INTERNAL_MOD_DIRS=$(find ./*/internal/test* -type f -name 'go.mod' -exec dirname {} \;)
           
           for exclude in $TOOLS_MOD_DIR $CHECKAPI_INTERNAL_MOD_DIRS; do
             AFFECTED_MODULES=$(echo "$AFFECTED_MODULES" | tr ' ' '\n' | grep -v "^${exclude#./}" | tr '\n' ' ')
