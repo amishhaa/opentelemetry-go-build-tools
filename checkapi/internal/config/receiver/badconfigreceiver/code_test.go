@@ -5,6 +5,10 @@ package configreceiver
 
 import "go.opentelemetry.io/collector/component"
 
+func createChange() {
+	// Create a change for the config
+}
+
 func createDefaultConfig() component.Config {
 	return &Config{
 		Foo: []string{"foo"},
