@@ -167,7 +167,9 @@ test:
 
 test-integration:
 	@set -e; for dir in $(ALL_GO_MOD_DIRS); do \
-	  (cd "$${dir}" && $(GO) list -tags=integration ./... \
+	  (cd "$${dir}" && \
+	    $(GO) list -tags=integration -f \
+	      '{{if .TestGoFiles}}{{.ImportPath}}{{end}}' ./... \
 	    | xargs -r $(GO) test -timeout $(TIMEOUT)s -tags=integration); \
 	done
 
