@@ -12,31 +12,34 @@ import (
 )
 
 const fileReadWrite = os.FileMode(0o644)
-const addUsage = `Adds a new dependent to be tested.
+const addUsage = `Adds one or more dependents to be tested. The dependents can be specified as command line arguments or in a .txt file, or both.
 
 Usage:
-  grater add [flags]
+  grater add [dependents...] [flags]
+
+Examples:
+
+grater add foo/bar bar/foo --file dependents.txt
+grater add foo/bar
+grater add --file dependents.txt
+grater add -f dependents.txt
+
 
 Flags:
-  -f, --file string   path to the dependents file`
+  -f, --file string   path to the dependents file
+  -h, --help          help for add`
 
 func TestAdd(t *testing.T) {
-	var err error
-	var out string
-
-	out, err = runCobra(t, "add", "--help")
+	out, err := runCobra(t, "add", "--help")
 	require.NoError(t, err)
 	assert.Contains(t, out, addUsage)
 }
 
 func TestAddCmd(t *testing.T) {
-	var err error
-	var out string
-
 	testDir := t.TempDir()
 	t.Chdir(testDir)
 
-	out, err = runCobra(t, "add", "foo/bar", "bar/foo")
+	out, err := runCobra(t, "add", "foo/bar", "bar/foo")
 	require.NoError(t, err)
 	assert.Contains(t, out, "Successfully added dependents.")
 

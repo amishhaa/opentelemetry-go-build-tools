@@ -9,6 +9,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"go.opentelemetry.io/build-tools/grater/internal/dependent"
 )
 
 func TestNewWorkspace(t *testing.T) {
@@ -36,8 +38,6 @@ func TestNewWorkspaceDirAlreadyExist(t *testing.T) {
 }
 
 func TestNewWorkspaceFails(t *testing.T) {
-	var err error
-
 	testDir := t.TempDir()
 	t.Chdir(testDir)
 
@@ -51,40 +51,75 @@ func TestNewWorkspaceFails(t *testing.T) {
 	assert.Contains(t, err.Error(), "failed to create .grater/ directory")
 }
 
-func TestAddDependent(t *testing.T) {
-	var err error
-	var ws *Workspace
-
+func TestAddDependents(t *testing.T) {
 	testDir := t.TempDir()
 	t.Chdir(testDir)
 
-	ws, err = NewWorkspace()
+	ws, err := NewWorkspace()
 	require.NoError(t, err)
 
-	err = ws.AddDependent("foo/bar")
+	ws.AddDependents([]dependent.Dependent{{ModuleName: "foo/bar"}})
+	assert.Contains(t, ws.dependents, dependent.Dependent{ModuleName: "foo/bar"})
+}
+
+func TestGetDependents(t *testing.T) {
+	testDir := t.TempDir()
+	t.Chdir(testDir)
+
+	ws, err := NewWorkspace()
+	require.NoError(t, err)
+
+	ws.AddDependents([]dependent.Dependent{{ModuleName: "foo/bar"}})
+
+	dependents := ws.GetDependents()
+	assert.Contains(t, dependents, dependent.Dependent{ModuleName: "foo/bar"})
+}
+
+func TestWriteDependents(t *testing.T) {
+	testDir := t.TempDir()
+	t.Chdir(testDir)
+
+	ws, err := NewWorkspace()
+	require.NoError(t, err)
+
+	ws.AddDependents([]dependent.Dependent{{ModuleName: "foo/bar"}})
+
+	err = ws.WriteDependents()
 	require.NoError(t, err)
 
 	content, err := os.ReadFile(ws.dependentsPath)
 	require.NoError(t, err)
-
-	assert.Contains(t, string(content), "foo/bar")
+	assert.JSONEq(t, `[{"module_name":"foo/bar"}]`, string(content))
 }
 
-func TestAddDependentFails(t *testing.T) {
-	var err error
-	var ws *Workspace
-
+func TestCommitToFile(t *testing.T) {
 	testDir := t.TempDir()
 	t.Chdir(testDir)
 
-	ws, err = NewWorkspace()
+	ws, err := NewWorkspace()
+	require.NoError(t, err)
+
+	err = commitToFile([]byte(`foo/bar`), ws.dependentsPath)
+	require.NoError(t, err)
+
+	content, err := os.ReadFile(ws.dependentsPath)
+	require.NoError(t, err)
+	assert.Contains(t, string(content), "foo/bar")
+}
+
+func TestCommitToFileFails(t *testing.T) {
+	testDir := t.TempDir()
+	t.Chdir(testDir)
+
+	ws, err := NewWorkspace()
 	require.NoError(t, err)
 
 	// Create a directory for dependentsPath to fail file creation.
 	err = os.MkdirAll(ws.dependentsPath, dirReadWrite)
 	require.NoError(t, err)
 
-	err = ws.AddDependent("foo/bar")
+	err = commitToFile([]byte(`foo/bar`), ws.dependentsPath)
+
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "failed to open dependents.txt")
+	assert.Contains(t, err.Error(), "failed to write")
 }
