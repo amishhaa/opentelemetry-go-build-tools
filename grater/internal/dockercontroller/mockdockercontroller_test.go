@@ -10,7 +10,7 @@ import (
 	"github.com/docker/docker/api/types/container"
 )
 
-func TestCreateVolume(t *testing.T) {
+func TestMockCreateVolume(t *testing.T) {
     m := NewMockDockerController()
     defer m.AssertExpectations(t)
 
@@ -21,7 +21,7 @@ func TestCreateVolume(t *testing.T) {
     defer cleanup()
 }
 
-func TestUseContainer(t *testing.T) {
+func TestMockUseContainer(t *testing.T) {
 	m := NewMockDockerController()
 	defer m.AssertExpectations(t)
 
@@ -34,7 +34,7 @@ func TestUseContainer(t *testing.T) {
 	assert.Equal(t, "container-id", containerID)
 }
 
-func TestExecuteCommand(t *testing.T) {
+func TestMockExecuteCommand(t *testing.T) {
 	m := NewMockDockerController()
 	defer m.AssertExpectations(t)
 
