@@ -9,6 +9,7 @@ Thumbs.db
 *.so
 coverage.*
 integration_coverage.*
+integration-coverage.*
 /go.work
 go.work.sum
 
