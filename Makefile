@@ -191,6 +191,23 @@ test-coverage:
 	done; \
 	sed -i.bak -e '2,$$ { /^mode: /d; }' coverage.txt
 
+COVERAGE_MODE    = atomic
+COVERAGE_PROFILE = coverage.out
+.PHONY: test-integration-coverage
+test-integration-coverage:
+	@set -e; \
+	printf "" > integration-coverage.txt; \
+	for dir in $(ALL_COVERAGE_MOD_DIRS); do \
+	  echo "$(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(COVERAGE_PROFILE)" $${dir}/..."; \
+	  (cd "$${dir}" && \
+	    $(GO) list -tags=integration ./... \
+	    | grep -v third_party \
+	    | xargs $(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(COVERAGE_PROFILE)" && \
+	  $(GO) tool cover -html=coverage.out -o integration-coverage.html); \
+	  [ -f "$${dir}/coverage.out" ] && cat "$${dir}/coverage.out" >> integration-coverage.txt; \
+	done; \
+	sed -i.bak -e '2,$$ { /^mode: /d; }' integration-coverage.txt
+
 .PHONY: lint
 lint: misspell golangci-lint govulncheck
 
