@@ -192,19 +192,19 @@ test-coverage:
 	sed -i.bak -e '2,$$ { /^mode: /d; }' coverage.txt
 
 COVERAGE_MODE    = atomic
-COVERAGE_PROFILE = coverage.out
+INTEGRATION_COVERAGE_PROFILE = integration_coverage.out
 .PHONY: test-integration-coverage
 test-integration-coverage:
 	@set -e; \
 	printf "" > integration-coverage.txt; \
 	for dir in $(ALL_COVERAGE_MOD_DIRS); do \
-	  echo "$(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(COVERAGE_PROFILE)" $${dir}/..."; \
+	  echo "$(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(INTEGRATION_COVERAGE_PROFILE)" $${dir}/..."; \
 	  (cd "$${dir}" && \
 	    $(GO) list -tags=integration ./... \
 	    | grep -v third_party \
-	    | xargs $(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(COVERAGE_PROFILE)" && \
-	  $(GO) tool cover -html=coverage.out -o integration-coverage.html); \
-	  [ -f "$${dir}/coverage.out" ] && cat "$${dir}/coverage.out" >> integration-coverage.txt; \
+	    | xargs $(GO) test -tags=integration -coverpkg=./... -covermode=$(COVERAGE_MODE) -coverprofile="$(INTEGRATION_COVERAGE_PROFILE)" && \
+	  $(GO) tool cover -html=$(INTEGRATION_COVERAGE_PROFILE) -o integration-coverage.html); \
+	  [ -f "$${dir}/$(INTEGRATION_COVERAGE_PROFILE)" ] && cat "$${dir}/$(INTEGRATION_COVERAGE_PROFILE)" >> integration-coverage.txt; \
 	done; \
 	sed -i.bak -e '2,$$ { /^mode: /d; }' integration-coverage.txt
 
