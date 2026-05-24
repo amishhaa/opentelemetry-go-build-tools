@@ -1,0 +1,12 @@
+[
+  {
+    "module_name": "contrib",
+    "module_path": "go.opentelemetry.io/contrib",
+    "module_version": "v0.46.0"
+  },
+  {
+    "module_name": "contrib",
+    "module_path": "go.opentelemetry.io/contrib",
+    "module_version": "latest"
+  }
+]

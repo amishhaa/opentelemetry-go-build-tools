@@ -45,8 +45,18 @@ func NewWorkspace() (*Workspace, error) {
 		dependents:           []module.Module{},
 		replacements:         [][]module.Module{},
 	}
-	err = w.create()
-	return w, err
+	if err = w.create(); err != nil {
+		return nil, err
+	}
+	data, err := os.ReadFile(w.dependentsPath)
+	if err == nil {
+		json.Unmarshal(data, &w.dependents)
+	}
+	data, err = os.ReadFile(w.replacementsPath)
+	if err == nil {
+		json.Unmarshal(data, &w.replacements)
+	}
+	return w, nil
 }
 
 // Create initializes a .grater directory in the given path.

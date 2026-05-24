@@ -32,7 +32,7 @@ func GetModuleFromProxy(ctx context.Context, c container.Container, useContainer
 		module.ModuleVersion,
 	)
 
-	_, err := c.ExecuteCommand(ctx,
+	resp, err := c.ExecuteCommand(ctx,
 		container.NewExecuteCommandConfig(
 			container.WithContainerID(useContainerResp.ContainerID),
 			container.WithWorkingDir(modulePath),
@@ -42,6 +42,16 @@ func GetModuleFromProxy(ctx context.Context, c container.Container, useContainer
 	if err != nil {
 		return err
 	}
+	fmt.Println(module.ModuleName)
+	fmt.Println(resp.Output)
+
+	resp, err = c.ExecuteCommand(ctx,
+		container.NewExecuteCommandConfig(
+			container.WithContainerID(useContainerResp.ContainerID),
+			container.WithCommand([]string{"ls", modulePath}),
+		),
+	)
+	fmt.Println(resp.Output)
 	return nil
 }
 

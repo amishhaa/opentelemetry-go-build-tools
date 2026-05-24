@@ -1,0 +1,14 @@
+[
+  {
+    "dependent": "contrib",
+    "status": "broken",
+    "base_output": "# ./...\r\npattern ./...: directory prefix . does not contain main module or its selected dependencies\r\nFAIL\t./... [setup failed]\r\nFAIL",
+    "head_output": "# ./...\r\npattern ./...: directory prefix . does not contain main module or its selected dependencies\r\nFAIL\t./... [setup failed]\r\nFAIL"
+  },
+  {
+    "dependent": "contrib",
+    "status": "pass",
+    "base_output": "go: downloading github.com/stretchr/testify v1.11.1\r\ngo: downloading github.com/pmezard/go-difflib v1.0.0\r\ngo: downloading github.com/davecgh/go-spew v1.1.1\r\ngo: downloading gopkg.in/yaml.v3 v3.0.1\r\n=== RUN   TestVersionSemver\r\n--- PASS: TestVersionSemver (0.00s)\r\nPASS\r\nok  \tgo.opentelemetry.io/contrib\t0.001s",
+    "head_output": "=== RUN   TestVersionSemver\r\n--- PASS: TestVersionSemver (0.00s)\r\nPASS\r\nok  \tgo.opentelemetry.io/contrib\t(cached)"
+  }
+]

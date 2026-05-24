@@ -8,17 +8,21 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"go.opentelemetry.io/build-tools/grater/internal/workspace"
 )
 
 func rootCmd() *cobra.Command {
+	ws, _ := workspace.NewWorkspace()
+
 	cmd := &cobra.Command{
 		Use:   "grater",
 		Short: "Detects regressions in downstream dependents",
 		Long:  `Grater is a tool to detect regressions introduced in our downstream dependents by our changes.`,
 	}
-	cmd.AddCommand(addCmd())
-	cmd.AddCommand(replaceCmd())
-	cmd.AddCommand(findCmd())
+	cmd.AddCommand(addCmd(ws))
+	cmd.AddCommand(replaceCmd(ws))
+	cmd.AddCommand(findCmd(ws))
+	cmd.AddCommand(runCmd(ws))
 	cmd.SetOut(os.Stdout)
 	return cmd
 }

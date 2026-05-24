@@ -42,6 +42,7 @@ func fetchDependents(mod module.Module) ([]module.Module, error) {
 		}
 	})
 
+	fmt.Println(dependents)
 	return dependents, nil
 }
 
@@ -60,5 +61,5 @@ func FindDependents(ws *workspace.Workspace, data string) error {
 	}
 
 	ws.AddDependents(dependents)
-	return nil
+	return ws.WriteDependents()
 }

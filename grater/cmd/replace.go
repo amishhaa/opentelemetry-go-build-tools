@@ -15,7 +15,7 @@ import (
 var replacePath string
 
 // replaceCmd represents the replace command
-func replaceCmd() *cobra.Command {
+func replaceCmd(ws *workspace.Workspace) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "replace [replacements...]",
 		Short: "Adds one or more replacements to be tested.",
@@ -29,11 +29,7 @@ grater replace --file replacements.txt
 grater replace -f replacements.txt
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, err := workspace.NewWorkspace()
-			if err != nil {
-				return err
-			}
-
+			var err error
 			if replacePath != "" {
 				if err = replacehelper.AddFromFile(ws, replacePath); err != nil {
 					return err

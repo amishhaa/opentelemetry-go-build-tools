@@ -12,7 +12,7 @@ import (
 )
 
 // findCmd represents the find command.
-func findCmd() *cobra.Command {
+func findCmd(ws *workspace.Workspace) *cobra.Command {
 	return &cobra.Command{
 		Use:   "find [module@version]",
 		Short: "Finds dependents of a module from pkg.go.dev.",
@@ -22,11 +22,7 @@ grater find go.opentelemetry.io/otel@v1.24.0
 `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, err := workspace.NewWorkspace()
-			if err != nil {
-				return err
-			}
-
+			var err error
 			if err = findhelper.FindDependents(ws, args[0]); err != nil {
 				return err
 			}

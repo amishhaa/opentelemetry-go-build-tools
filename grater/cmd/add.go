@@ -13,7 +13,7 @@ import (
 var path string
 
 // addCmd represents the add command
-func addCmd() *cobra.Command {
+func addCmd(ws *workspace.Workspace) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add [dependents...]",
 		Short: "Adds one or more dependents to be tested.",
@@ -25,11 +25,7 @@ grater add --file dependents.txt
 grater add -f dependents.txt
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ws, err := workspace.NewWorkspace()
-			if err != nil {
-				return err
-			}
-
+			var err error
 			if path != "" {
 				if err = addhelper.AddFromFile(ws, path); err != nil {
 					return err

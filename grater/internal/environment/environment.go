@@ -42,6 +42,7 @@ func (env *Environment) RunTests(ctx context.Context, mainModuleBase, mainModule
 	var results [][]container.ExecuteCommandResponse
 
 	for _, dependent := range dependents {
+		fmt.Println(dependent)
 		respUseContainer, err := env.getRunTestContainer(ctx, binds, dependent, replacements)
 		if err != nil {
 			return nil, err
@@ -50,6 +51,8 @@ func (env *Environment) RunTests(ctx context.Context, mainModuleBase, mainModule
 		if err != nil {
 			return nil, err
 		}
+		fmt.Println(result[0].Output)
+		fmt.Println(result[1].Output)
 		results = append(results, result)
 	}
 	return results, nil
@@ -74,15 +77,16 @@ func (env *Environment) runTest(ctx context.Context, respUseContainer container.
 		return nil, err
 	}
 
-	_, err = env.c.ExecuteCommand(ctx,
+	resp, err := env.c.ExecuteCommand(ctx,
 		container.NewExecuteCommandConfig(
 			container.WithContainerID(respUseContainer.ContainerID),
-			container.WithCommand([]string{"cat", "/dependent/dependent/go.mod"}),
+			container.WithCommand([]string{"ls", dependentPath}),
 		),
 	)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(resp.Output)
 
 	executeCommandRespHead, err := commands.RunModuleTest(ctx, env.c, respUseContainer, dependentPath)
 	if err != nil {
@@ -219,6 +223,7 @@ func (env *Environment) getMainModuleBinds(ctx context.Context, mainModuleHead m
 
 func (env *Environment) getModuleInContainer(ctx context.Context, respUseContainer container.UseContainerResponse, module module.Module, modulePath string) error {
 	if module.IsRemotePath() {
+		fmt.Println("isremote")
 		_, err := env.c.ExecuteCommand(ctx,
 			container.NewExecuteCommandConfig(
 				container.WithContainerID(respUseContainer.ContainerID),
