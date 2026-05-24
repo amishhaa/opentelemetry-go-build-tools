@@ -5,8 +5,6 @@
 package report
 
 import (
-	"encoding/json"
-
 	"go.opentelemetry.io/build-tools/grater/internal/container"
 	"go.opentelemetry.io/build-tools/grater/internal/module"
 )
@@ -41,22 +39,22 @@ func classifyResult(base, head container.ExecuteCommandResponse) string {
 	return ""
 }
 
-// GetReport generates a report for all test results as JSON bytes.
-func GetReport(dependents []module.Module, results [][]container.ExecuteCommandResponse) ([]byte, error) {
+// GetReport generates a report for all test results.
+func GetReport(dependents []module.Module, results [][]container.ExecuteCommandResponse) []Result {
 	report := []Result{}
 	for i, result := range results {
 		report = append(report, NewResult(dependents[i], result))
 	}
-	return json.MarshalIndent(report, "", "  ")
+	return report
 }
 
-// GetRegressionReport generates a report containing only regressions as JSON bytes.
-func GetRegressionReport(dependents []module.Module, results [][]container.ExecuteCommandResponse) ([]byte, error) {
+// GetRegressionReport generates a report containing only regressions.
+func GetRegressionReport(dependents []module.Module, results [][]container.ExecuteCommandResponse) []Result {
 	report := []Result{}
 	for i, result := range results {
 		if classifyResult(result[0], result[1]) == "regression" {
 			report = append(report, NewResult(dependents[i], result))
 		}
 	}
-	return json.MarshalIndent(report, "", "  ")
+	return report
 }
